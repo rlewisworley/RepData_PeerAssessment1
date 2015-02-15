@@ -1,0 +1,17 @@
+{
+    "contents" : "#Import the packages\n\nlibrary(\"ggplot2\");\nlibrary(plyr);\n# Loading and preprocessing the data\n\nrawdata<-read.csv(\"activity.csv\",header=T)\n\nsummary1<-ddply(rawdata,c(\"date\"),summarise\n               ,totalSteps=sum(steps,na.rm=TRUE)\n)\n# What is mean total number of steps taken per day?\n\n\n#Make a histogram of the total number of steps taken each day\nhist(summary1$totalSteps)\n\n#Calculate and report the mean and median total number of steps taken per day\nmean(summary1$totalSteps)\nmedian(summary1$totalSteps)\n\n# 2 What is the average daily activity pattern?\n\n# Make a time series plot (i.e. type = \"l\") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)\n\nsummary2<-ddply(rawdata,c(\"interval\"),summarise\n                ,avg=mean(steps,na.rm=TRUE))\n\nggplot(summary2,aes(x=interval,y=avg)) + geom_line()\n\n# Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?\n\nsummary2[which.max(summary2[,2]),]\n\n# 3 Imputing missing values\n\n#Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)\n\ncount(is.na(rawdata$steps))\n\n#Create a new dataset that is equal to the original dataset but with the missing data filled in.\n\nsummary3<-rawdata\n\n#the fixed data is the average for that 5 minute interval across all days\nsummary3$fixed<-ifelse(is.na(rawdata$steps),summary2$avg,rawdata$steps)\n\n#Make a histogram of the total number of steps taken each day\nsummary3_tot<-ddply(summary3,c(\"date\"),summarise\n                ,totalSteps=sum(fixed)\n)\n\nhist(summary3_tot$totalSteps)\n\n#Calculate and report the mean and median total number of steps taken per day\nmean(summary3_tot$totalSteps)\nmedian(summary3_tot$totalSteps)\n\n\n#Are there differences in activity patterns between weekdays and weekends?\n\n\n",
+    "created" : 1423951038038.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1154400751",
+    "id" : "B8C8E5DB",
+    "lastKnownWriteTime" : 1423964342,
+    "path" : "D:/RProjects/RepData_PeerAssessment1/code.R",
+    "project_path" : "code.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

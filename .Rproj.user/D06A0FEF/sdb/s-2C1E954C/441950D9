@@ -1,0 +1,16 @@
+{
+    "contents" : "---\ntitle: \"Reproducible Research: Peer Assessment 1\"\noutput: \n  html_document:\n    keep_md: true\n---\n\n\n## Loading and preprocessing the data\n\n```{r }\nlibrary(\"ggplot2\");\nlibrary(plyr);\n\nrawdata<-read.csv(\"activity.csv\",header=T)\n\nsummary1<-ddply(rawdata,c(\"date\"),summarise\n               ,totalSteps=sum(steps,na.rm=TRUE)\n)\n\n```\n\n\n## What is mean total number of steps taken per day?\n\n###Make a histogram of the total number of steps taken each day\n\n```{r }\nhist(summary1$totalSteps)\n\n```\n\n###Calculate and report the mean and median total number of steps taken per day\n```{r}\nmean(summary1$totalSteps)\nmedian(summary1$totalSteps)\n\n```\n\n\n## What is the average daily activity pattern?\n\n### Make a time series plot (i.e. type = \"l\") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)\n\n```{r}\nsummary2<-ddply(rawdata,c(\"interval\"),summarise\n                ,avg=mean(steps,na.rm=TRUE))\n\nggplot(summary2,aes(x=interval,y=avg)) + geom_line()\n\n```\n\n\n### Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?\n```{r}\n\nsummary2[which.max(summary2[,2]),]\n\n```\n\n## Imputing missing values\n###Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)\n\n```{r}\ncount(is.na(rawdata$steps))\n\n```\n###Create a new dataset that is equal to the original dataset but with the missing data filled in.\n\n```{r}\nsummary3<-rawdata\n\n```\n\n\n###the fixed data is the average for that 5 minute interval across all days\n```{r}\nsummary3$fixed<-ifelse(is.na(rawdata$steps),summary2$avg,rawdata$steps)\n\n```\n###Make a histogram of the total number of steps taken each day\n```{r}\nsummary3_tot<-ddply(summary3,c(\"date\"),summarise\n                ,totalSteps=sum(fixed)\n)\n\nhist(summary3_tot$totalSteps)\n\n\n```\n\n###Calculate and report the mean and median total number of steps taken per day\n```{r}\nmean(summary3_tot$totalSteps)\nmedian(summary3_tot$totalSteps)\n\n\n```\n\n## Are there differences in activity patterns between weekdays and weekends?\n\n###Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.\n\n```{r}\nsummary3$weekday<-weekdays(strptime(summary3$date,\"%Y-%m-%d\"))\nsummary3$WDtype<-as.factor(ifelse(summary3$weekday==\"Saturday\" | summary3$weekday==\"Sunday\",\"Weekend\",\"Weekday\"))\n\n```\n\n##Make a panel plot containing a time series plot (i.e. type = \"l\") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). \n```{r}\nsummary4<-ddply(summary3,c(\"WDtype\",\"interval\"),summarise\n                ,avg=mean(fixed))\nggplot(summary4,aes(x=interval,y=avg)) + geom_line()+ facet_wrap(~WDtype,ncol=1)\n\n```\n\n",
+    "created" : 1423961382918.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2054582383",
+    "id" : "441950D9",
+    "lastKnownWriteTime" : 1423964318,
+    "path" : "D:/RProjects/RepData_PeerAssessment1/PA1_template.Rmd",
+    "project_path" : "PA1_template.Rmd",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_markdown"
+}

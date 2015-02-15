@@ -1,0 +1,16 @@
+{
+    "contents" : "#install.packages(\"RODBC\",dependencies=TRUE,lib=\"C:/Program Files/R/R-3.1.2/library/\")\nlibrary(RODBC);\nlibrary(plyr);\nlibrary(ggplot2)\nchannel <- odbcConnect(\"ITFA_Repository_Prod\",uid=\"SSRS_Reader\",pwd=\"vDnDeEgvfVEQGyAHUecY\");\np <- sqlQuery(channel, \"\n              SELECT * FROM GENESYS_Repository.REPORTS.tblGenesys_All where call_type='Voice' and factory not in ('D1D','D1C','AFO')\n              \");\nclose(channel);\n\nhead(p)\n\nsummary(p$CALL_TYPE)\n\np$PRIO_TYPE <- factor(ifelse(p$PRIORITY_CALL_TYPE==\"\",\"Standard_Call\",as.character(p$PRIORITY_CALL_TYPE)))\np$ASA_gt100 <- factor(p$ASA>100)\nsummary(p)\n\np$YEAR<-factor(substr(p$INTEL_WW,1,4))\n\np2014<-p[p$YEAR==2014,] \np2015<-p[p$YEAR==2015,] \n\n#Filter out the sites\n\nsummary(p2014)\n\ntapply(p2014$ASA,p2014$PRIO_TYPE,mean)\ntapply(p2014$ASA,p2014$PRIO_TYPE,median)\ntapply(p2015$ASA,p2015$PRIO_TYPE,median)\n\ntapply(p2014$ASA,p2014$PRIO_TYPE,quantile,probs=seq(0,1,.1))\ntapply(p2015$ASA,p2015$PRIO_TYPE,quantile,probs=seq(0,1,.1))\n\np2014_gt100<-p[p$ASA > 100,]\nggplot(data=p2014_gt100,aes(x=ASA)) +  geom_histogram(binwidth=100 ) + facet_grid(.~PRIO_TYPE)\n\np2014_lt100<-p[p$ASA <=100,]\nggplot(data=p2014_lt100,aes(x=ASA)) +  geom_histogram(binwidth=1 ) + scale_x_continuous(breaks=seq(0,100,5)) + facet_grid(.~PRIO_TYPE)\nsummary(p2014)\n\n\n",
+    "created" : 1423951599458.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "634377422",
+    "id" : "1D0354B3",
+    "lastKnownWriteTime" : 1423697037,
+    "path" : "D:/RProjects/AmbrosiaPriorityCall/PriorityCalls.R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
